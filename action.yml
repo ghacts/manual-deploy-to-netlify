@@ -52,12 +52,12 @@ runs:
 
     - name: Set Netlify deploy alias argument
       if: inputs.prod == 'false' && inputs.alias != ''
-      run: echo "NETLIFY_DEPLOY_ALIAS_ARG='--alias=${{ inputs.alias }}'" >> "$GITHUB_ENV"
+      run: echo "NETLIFY_DEPLOY_ALIAS_ARG=--alias=${{ inputs.alias }}" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Set Netlify function dir
       if: inputs.functions != ''
-      run: echo "NETLIFY_FUNCTIONS_ARG='--functions=${{ inputs.functions }}'" >> "$GITHUB_ENV"
+      run: echo "NETLIFY_FUNCTIONS_ARG=--functions=${{ inputs.functions }}" >> "$GITHUB_ENV"
       shell: bash
 
     - name: Set Netlify deploy message
