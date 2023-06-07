@@ -50,10 +50,6 @@ runs:
     - name: Set up Node
       uses: actions/setup-node@v3
 
-    - name: Install Netlify CLI
-      run: npm install -g netlify-cli
-      shell: bash
-
     - name: Set Netlify deploy alias argument
       if: inputs.prod == 'false' && inputs.alias != ''
       run: echo "NETLIFY_DEPLOY_ALIAS_ARG='--alias=${{ inputs.alias }}'" >> "$GITHUB_ENV"
