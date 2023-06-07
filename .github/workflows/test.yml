@@ -16,12 +16,16 @@ jobs:
   test-deploy-preview:
     name: Test deploy preview site
     runs-on: ubuntu-latest
+    environment:
+      name: test-preview
+      url: ${{ steps.deploy.outputs.netlify-deploy-url }}
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
 
       - name: Test deploy preview site
+        id: deploy
         uses: ./
         with:
           auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
@@ -33,12 +37,16 @@ jobs:
     name: Test deploy production site
     runs-on: ubuntu-latest
     if: always()
+    environment:
+      name: test-prod
+      url: ${{ steps.deploy.outputs.netlify-deploy-url }}
     steps:
       - name: Checkout
         id: checkout
         uses: actions/checkout@v3
 
       - name: Test deploy production site
+        id: deploy
         uses: ./
         with:
           auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
