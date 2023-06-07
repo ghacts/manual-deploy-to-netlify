@@ -1,0 +1,136 @@
+name: Manual deploy to Netlify
+description: GitHub Actions for manual deploying static site to Netlify
+
+inputs:
+  auth-token:
+    description: Netlify authentication token
+    type: string
+    required: true
+  site-id:
+    description: Netlify site ID
+    type: string
+    required: true
+  dir:
+    description: Directory to deploy
+    type: string
+    required: false
+    default: 'dist/'
+  functions:
+    description: Netlify functions directory to deploy
+    type: string
+    required: false
+    default: ''
+  message:
+    description: Deploy message
+    type: string
+    required: false
+    default: ''
+  alias:
+    description: Site alias
+    type: string
+    required: false
+    default: ''
+  prod:
+    description: Deploy to production
+    type: boolean
+    required: false
+    default: false
+
+outputs:
+  success:
+    description: Deployment success
+    value: ${{ steps.deploy.outputs.success }}
+  netlify_deploy_url:
+    description: Netlify deploy URL
+    value: ${{ steps.post-deploy.outputs.netlify_deploy_url }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v3
+
+    - name: Install Netlify CLI
+      run: npm install -g netlify-cli
+      shell: bash
+
+    - name: Set Netlify deploy alias argument
+      if: inputs.prod == 'false' && inputs.alias != ''
+      run: echo "NETLIFY_DEPLOY_ALIAS_ARG='--alias=${{ inputs.alias }}'" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify function dir
+      if: inputs.functions != ''
+      run: echo "NETLIFY_FUNCTIONS_ARG='--functions=${{ inputs.functions }}'" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify deploy message
+      if: inputs.message == ''
+      run: echo "NETLIFY_DEPLOY_MESSAGE=$(git log -1 --pretty=%s)" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify deploy message
+      if: inputs.message != ''
+      run: echo "NETLIFY_DEPLOY_MESSAGE=${{ inputs.message }}" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify prod argument
+      if: inputs.prod == 'true'
+      run: echo "NETLIFY_PROD_ARG=--prod" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify deployment as production deployment
+      run: echo "PROD=${{ inputs.prod }}" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Deploy site
+      id: deploy
+      env:
+        NETLIFY_AUTH_TOKEN: "${{ inputs.auth-token }}"
+        NETLIFY_SITE_ID: "${{ inputs.site-id }}"
+        NETLIFY_DIR: "${{ inputs.dir }}"
+      run: |
+        NETLIFY_DEPLOY_COMMAND="netlify deploy \
+          --auth '${NETLIFY_AUTH_TOKEN}' \
+          --site '${NETLIFY_SITE_ID}' \
+          ${NETLIFY_DEPLOY_ALIAS_ARG} \
+          --dir '${NETLIFY_DIR}' \
+          ${NETLIFY_FUNCTIONS_ARG} \
+          --message '${NETLIFY_DEPLOY_MESSAGE}' \
+          ${NETLIFY_PROD_ARG}"
+        echo "NETLIFY_DEPLOY_COMMAND=${NETLIFY_DEPLOY_COMMAND}" >> "$GITHUB_ENV"
+
+        DEPLOY_COMMAND="${NETLIFY_DEPLOY_COMMAND} --json | tr '\n' ' '"
+
+        echo "Running deploy command:"
+        echo $DEPLOY_COMMAND
+        OUTPUT=$(eval $DEPLOY_COMMAND)
+
+        echo "Deploy output:"
+        echo $OUTPUT
+
+        echo "netlify_output=$OUTPUT" >> "$GITHUB_OUTPUT"
+        echo "success=true" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Post deploy
+      id: post-deploy
+      if: success()
+      env:
+        NETLIFY_DRAFT_URL: ${{ fromJson(steps.deploy.outputs.netlify_output).deploy_url }}
+        NETLIFY_PROD_URL: ${{ fromJson(steps.deploy.outputs.netlify_output).url }}
+      run: |
+        ([[ ${PROD:-false} == "true" ]] && \
+          echo "netlify_deploy_url=${NETLIFY_PROD_URL}" >> "$GITHUB_OUTPUT") || \
+          echo "netlify_deploy_url=${NETLIFY_DRAFT_URL}" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Debug deploy
+      id: debug-deploy
+      if: always() && (steps.deploy.outcome == 'failure' || steps.post_deploy.outcome == 'failure' )
+      env:
+        NETLIFY_AUTH_TOKEN: "${{ inputs.auth-token }}"
+        NETLIFY_SITE_ID: "${{ inputs.site-id }}"
+        NETLIFY_DIR: "${{ inputs.dir }}"
+      run: eval $NETLIFY_DEPLOY_COMMAND
+      shell: bash

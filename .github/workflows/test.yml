@@ -1,0 +1,47 @@
+
+name: Test
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v*
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test-deploy-preview:
+    name: Test deploy preview site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Test deploy preview site
+        uses: ./
+        with:
+          auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
+          site-id: '${{ secrets.NETLIFY_SITE_ID }}'
+          dir: sites/preview
+          alias: preview
+
+  test-deploy-prod:
+    name: Test deploy production site
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v3
+
+      - name: Test deploy production site
+        uses: ./
+        with:
+          auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
+          site-id: '${{ secrets.NETLIFY_SITE_ID }}'
+          dir: sites/prod
+          prod: true
