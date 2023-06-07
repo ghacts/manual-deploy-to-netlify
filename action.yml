@@ -40,9 +40,9 @@ outputs:
   success:
     description: Deployment success
     value: ${{ steps.deploy.outputs.success }}
-  netlify_deploy_url:
+  netlify-deploy-url:
     description: Netlify deploy URL
-    value: ${{ steps.post-deploy.outputs.netlify_deploy_url }}
+    value: ${{ steps.post-deploy.outputs.netlify-deploy-url }}
 
 runs:
   using: "composite"
@@ -105,7 +105,7 @@ runs:
         echo "Deploy output:"
         echo $OUTPUT
 
-        echo "netlify_output=$OUTPUT" >> "$GITHUB_OUTPUT"
+        echo "netlify-output=$OUTPUT" >> "$GITHUB_OUTPUT"
         echo "success=true" >> "$GITHUB_OUTPUT"
       shell: bash
 
@@ -113,12 +113,12 @@ runs:
       id: post-deploy
       if: success()
       env:
-        NETLIFY_DRAFT_URL: ${{ fromJson(steps.deploy.outputs.netlify_output).deploy_url }}
-        NETLIFY_PROD_URL: ${{ fromJson(steps.deploy.outputs.netlify_output).url }}
+        NETLIFY_DRAFT_URL: ${{ fromJson(steps.deploy.outputs.netlify-output).deploy_url }}
+        NETLIFY_PROD_URL: ${{ fromJson(steps.deploy.outputs.netlify-output).url }}
       run: |
         ([[ ${PROD:-false} == "true" ]] && \
-          echo "netlify_deploy_url=${NETLIFY_PROD_URL}" >> "$GITHUB_OUTPUT") || \
-          echo "netlify_deploy_url=${NETLIFY_DRAFT_URL}" >> "$GITHUB_OUTPUT"
+          echo "netlify-deploy-url=${NETLIFY_PROD_URL}" >> "$GITHUB_OUTPUT") || \
+          echo "netlify-deploy-url=${NETLIFY_DRAFT_URL}" >> "$GITHUB_OUTPUT"
       shell: bash
 
     - name: Debug deploy
