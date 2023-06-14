@@ -6,8 +6,8 @@ inputs:
     description: Netlify authentication token
     type: string
     required: true
-  site-id:
-    description: Netlify site ID
+  site:
+    description: Netlify site name
     type: string
     required: true
   dir:
@@ -83,12 +83,12 @@ runs:
       id: deploy
       env:
         NETLIFY_AUTH_TOKEN: "${{ inputs.auth-token }}"
-        NETLIFY_SITE_ID: "${{ inputs.site-id }}"
+        NETLIFY_SITE: "${{ inputs.site }}"
         NETLIFY_DIR: "${{ inputs.dir }}"
       run: |
         NETLIFY_DEPLOY_COMMAND="netlify deploy \
           --auth '${NETLIFY_AUTH_TOKEN}' \
-          --site '${NETLIFY_SITE_ID}' \
+          --site '${NETLIFY_SITE}' \
           ${NETLIFY_DEPLOY_ALIAS_ARG} \
           --dir '${NETLIFY_DIR}' \
           ${NETLIFY_FUNCTIONS_ARG} \
@@ -126,7 +126,7 @@ runs:
       if: always() && (steps.deploy.outcome == 'failure' || steps.post_deploy.outcome == 'failure' )
       env:
         NETLIFY_AUTH_TOKEN: "${{ inputs.auth-token }}"
-        NETLIFY_SITE_ID: "${{ inputs.site-id }}"
+        NETLIFY_SITE: "${{ inputs.site }}"
         NETLIFY_DIR: "${{ inputs.dir }}"
       run: eval $NETLIFY_DEPLOY_COMMAND
       shell: bash

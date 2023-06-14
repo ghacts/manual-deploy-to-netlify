@@ -29,7 +29,7 @@ jobs:
         uses: ./
         with:
           auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
-          site-id: '${{ secrets.NETLIFY_SITE_ID }}'
+          site: '${{ vars.NETLIFY_SITE_NAME }}'
           dir: sites/preview
           alias: preview
 
@@ -50,6 +50,6 @@ jobs:
         uses: ./
         with:
           auth-token: '${{ secrets.NETLIFY_AUTH_TOKEN }}'
-          site-id: '${{ secrets.NETLIFY_SITE_ID }}'
+          site: '${{ vars.NETLIFY_SITE_NAME }}'
           dir: sites/prod
           prod: true
