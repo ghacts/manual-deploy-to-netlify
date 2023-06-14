@@ -1,5 +1,5 @@
 name: Manual deploy to Netlify
-description: GitHub Actions for manual deploying static site to Netlify
+description: GitHub Actions for manual deploying static site to Netlify.
 
 inputs:
   auth-token:
@@ -130,3 +130,7 @@ runs:
         NETLIFY_DIR: "${{ inputs.dir }}"
       run: eval $NETLIFY_DEPLOY_COMMAND
       shell: bash
+
+branding:
+  icon: "send"
+  color: "green"
