@@ -15,6 +15,11 @@ inputs:
     type: string
     required: false
     default: 'dist/'
+  filter:
+    description: For monorepos, specify the name of the application to run the command in
+    type: string
+    required: false
+    default: ''
   functions:
     description: Netlify functions directory to deploy
     type: string
@@ -55,6 +60,16 @@ runs:
       run: echo "NETLIFY_DEPLOY_ALIAS_ARG=--alias=${{ inputs.alias }}" >> "$GITHUB_ENV"
       shell: bash
 
+    - name: Set Netlify deploy dir argument
+      if: inputs.dir != ''
+      run: echo "NETLIFY_DEPLOY_DIR_ARG=--dir=${{ inputs.dir }}" >> "$GITHUB_ENV"
+      shell: bash
+
+    - name: Set Netlify deploy filter argument
+      if: inputs.filter != ''
+      run: echo "NETLIFY_DEPLOY_FILTER_ARG=--filter=${{ inputs.filter }}" >> "$GITHUB_ENV"
+      shell: bash
+
     - name: Set Netlify function dir
       if: inputs.functions != ''
       run: echo "NETLIFY_FUNCTIONS_ARG=--functions=${{ inputs.functions }}" >> "$GITHUB_ENV"
@@ -90,7 +105,8 @@ runs:
           --auth '${NETLIFY_AUTH_TOKEN}' \
           --site '${NETLIFY_SITE}' \
           ${NETLIFY_DEPLOY_ALIAS_ARG} \
-          --dir '${NETLIFY_DIR}' \
+          ${NETLIFY_DEPLOY_DIR_ARG} \
+          ${NETLIFY_DEPLOY_FILTER_ARG} \
           ${NETLIFY_FUNCTIONS_ARG} \
           --message '${NETLIFY_DEPLOY_MESSAGE}' \
           ${NETLIFY_PROD_ARG}"
