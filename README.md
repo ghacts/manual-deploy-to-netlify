@@ -14,15 +14,16 @@ GitHub Actions for manual deploying static site to Netlify.
 
 ## Inputs
 
-| parameter  | description                           | required | default |
-| ---------- | ------------------------------------- | -------- | ------- |
-| auth-token | Netlify authentication token          | `true`   |         |
-| site       | Netlify site name                     | `true`   |         |
-| dir        | Directory to deploy                   | `false`  | dist/   |
-| functions  | Netlify functions directory to deploy | `false`  |         |
-| message    | Deploy message                        | `false`  |         |
-| alias      | Site alias                            | `false`  |         |
-| prod       | Deploy to production                  | `false`  | false   |
+| parameter  | description                                                              | required | default |
+| ---------- | ------------------------------------------------------------------------ | -------- | ------- |
+| auth-token | Netlify authentication token                                             | `true`   |         |
+| site       | Netlify site name                                                        | `true`   |         |
+| dir        | Directory to deploy                                                      | `false`  | dist/   |
+| filter     | For monorepos, specify the name of the application to run the command in | `false`  |         |
+| functions  | Netlify functions directory to deploy                                    | `false`  |         |
+| message    | Deploy message                                                           | `false`  |         |
+| alias      | Site alias                                                               | `false`  |         |
+| prod       | Deploy to production                                                     | `false`  | false   |
 
 <!-- action-docs-inputs -->
 
