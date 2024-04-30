@@ -4,42 +4,34 @@ description: GitHub Actions for manual deploying static site to Netlify.
 inputs:
   auth-token:
     description: Netlify authentication token
-    type: string
     required: true
   site:
     description: Netlify site name
-    type: string
     required: true
   dir:
     description: Directory to deploy
-    type: string
     required: false
     default: 'dist/'
   filter:
     description: For monorepos, specify the name of the application to run the command in
-    type: string
     required: false
     default: ''
   functions:
     description: Netlify functions directory to deploy
-    type: string
     required: false
     default: ''
   message:
     description: Deploy message
-    type: string
     required: false
     default: ''
   alias:
     description: Site alias
-    type: string
     required: false
     default: ''
   prod:
     description: Deploy to production
-    type: boolean
     required: false
-    default: false
+    default: 'false'
 
 outputs:
   success:
