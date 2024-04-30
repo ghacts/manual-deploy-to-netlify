@@ -45,7 +45,7 @@ runs:
   using: "composite"
   steps:
     - name: Set up Node
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
 
     - name: Set Netlify deploy alias argument
       if: inputs.prod == 'false' && inputs.alias != ''
