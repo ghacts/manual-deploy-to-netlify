@@ -98,6 +98,7 @@ runs:
         NETLIFY_DIR: "${{ inputs.dir }}"
       run: |
         NETLIFY_DEPLOY_COMMAND="netlify deploy \
+          --no-build \
           --auth '${NETLIFY_AUTH_TOKEN}' \
           --site '${NETLIFY_SITE}' \
           ${NETLIFY_DEPLOY_ALIAS_ARG} \
